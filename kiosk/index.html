@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Attendance Kiosk</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Setup screen (shown until the device is configured) -->
+  <section id="setup" class="screen hidden">
+    <div class="setup-card">
+      <h1>Kiosk Setup</h1>
+      <p class="muted">Configure this device once. Values persist on the device.</p>
+      <label>API base URL<input id="cfg-api" type="url" placeholder="http://localhost:8901" /></label>
+      <label>Device ID<input id="cfg-device" type="text" placeholder="entrance-01" /></label>
+      <label>Device key<input id="cfg-key" type="text" placeholder="paste device api key" /></label>
+      <label>Label (optional)<input id="cfg-label" type="text" placeholder="Entrance" /></label>
+      <button id="cfg-save" class="btn">Save & Start</button>
+      <p id="cfg-err" class="err"></p>
+    </div>
+  </section>
+
+  <!-- Kiosk screen -->
+  <section id="kiosk" class="screen hidden">
+    <header class="topbar">
+      <span id="k-label" class="label">Kiosk</span>
+      <span class="status-dots">
+        <span id="dot-net" class="dot" title="network"></span>
+        <span id="q-count" class="queue" title="queued uploads">0</span>
+        <button id="mute" class="icon-btn" title="sound">🔊</button>
+        <button id="reconfig" class="icon-btn" title="settings">⚙️</button>
+      </span>
+    </header>
+
+    <main class="stage">
+      <div id="ring" class="ring">
+        <video id="video" autoplay playsinline muted></video>
+        <div id="scan" class="scanline"></div>
+      </div>
+      <div id="prompt" class="prompt">Look at the camera</div>
+      <div id="result" class="result hidden">
+        <img id="r-photo" class="r-photo" alt="" />
+        <div class="r-text">
+          <div id="r-name" class="r-name"></div>
+          <div id="r-msg" class="r-msg"></div>
+          <div id="r-time" class="r-time"></div>
+        </div>
+      </div>
+      <button id="capture" class="btn capture">Tap to check in / out</button>
+    </main>
+    <canvas id="canvas" class="hidden"></canvas>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

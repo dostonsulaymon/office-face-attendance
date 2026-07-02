@@ -1,0 +1,123 @@
+# ============================================================================
+# Office Attendance — application stack (production-ish).
+#
+# This composes OUR services. The CompreFace face-recognition stack lives in
+# compreface/docker-compose.yml and is brought up separately (it has its own
+# heavy Postgres/JVM services). Both stacks share the `attendance-net` network
+# so `api` can reach `compreface-ui` by name.
+#
+# Build order status:
+#   [x] postgres        — runnable now
+#   [x] redis           — runnable now
+#   [ ] liveness        — added in slice 3
+#   [ ] api             — added in slice 4
+#   [ ] dashboard       — added in slice 6
+# Uncomment services as each slice lands.
+# ============================================================================
+
+networks:
+  attendance-net:
+    name: attendance-net
+
+volumes:
+  postgres-data:
+  captured-data:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    container_name: attendance-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"   # host 5433 to avoid clashing with any local Postgres
+    networks:
+      - attendance-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    container_name: attendance-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./docker-data/redis:/data
+    networks:
+      - attendance-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  liveness:
+    build: ./liveness
+    restart: always
+    container_name: attendance-liveness
+    ports:
+      - "8902:8902"   # server-side anti-spoof; backend calls it before recognition
+    networks:
+      - attendance-net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if b'\\\"status\\\":\\\"ok\\\"' in urllib.request.urlopen('http://localhost:8902/health').read() else 1)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  api:
+    build: ./backend
+    restart: always
+    container_name: attendance-api
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      liveness: { condition: service_healthy }
+    volumes:
+      - captured-data:/data
+    ports:
+      - "8901:8080"
+    networks:
+      - attendance-net
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Static frontends served by nginx (files mounted read-only). The kiosk is
+  # reached from the phones on 8904 (via `adb reverse`), the dashboard on 8905.
+  kiosk:
+    image: nginx:alpine
+    restart: always
+    container_name: attendance-kiosk
+    volumes:
+      - ./kiosk:/usr/share/nginx/html:ro
+      - ./nginx/static-nocache.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8904:80"
+    networks:
+      - attendance-net
+
+  dashboard:
+    image: nginx:alpine
+    restart: always
+    container_name: attendance-dashboard
+    volumes:
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./nginx/static-nocache.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8905:80"
+    networks:
+      - attendance-net

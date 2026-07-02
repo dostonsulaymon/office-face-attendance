@@ -1,0 +1,9 @@
+vendor/.git
+vendor/images
+vendor/datasets
+vendor/saved_logs
+vendor/train.py
+vendor/test.py
+vendor/README*.md
+**/__pycache__
+*.pyc

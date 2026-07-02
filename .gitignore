@@ -1,0 +1,52 @@
+# Env / secrets
+.env
+*.env.local
+!.env.example
+!compreface/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Data / captured biometric images (NEVER commit)
+data/
+captured/
+uploads/
+*.db
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Docker
+docker-data/
+
+# Per-device kiosk API keys (local runtime secrets — NEVER commit)
+scripts/device-keys.txt
+
+# Third-party sample face images (not ours to redistribute)
+scripts/test-faces/
+
+# Vendored Silent-Face-Anti-Spoofing: keep src + models + LICENSE only
+liveness/vendor/.git/
+liveness/vendor/datasets/
+liveness/vendor/saved_logs/
+liveness/vendor/images/
+
+# Background task output
+*.output

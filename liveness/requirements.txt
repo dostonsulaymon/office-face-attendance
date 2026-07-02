@@ -1,0 +1,11 @@
+# Modern replacements for the vendored repo's 2019-era pins (torch 1.2.0 etc.
+# will not build on current Python). The .pth files are plain state_dicts and
+# load fine on torch 2.2.x. torch/torchvision CPU wheels are installed from the
+# PyTorch CPU index in the Dockerfile to avoid pulling CUDA.
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+Pillow==10.4.0
+torch==2.2.2

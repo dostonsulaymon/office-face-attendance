@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Dashboard</title>
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+  <!-- Login -->
+  <section id="login" class="login screen">
+    <form class="login-card" id="login-form">
+      <h1>Attendance</h1>
+      <p class="muted">Sign in to the operations dashboard</p>
+      <input id="l-email" type="email" placeholder="admin@example.com" value="admin@example.com" />
+      <input id="l-pass" type="password" placeholder="password" />
+      <button class="btn" type="submit">Sign in</button>
+      <p id="l-err" class="err"></p>
+    </form>
+  </section>
+
+  <!-- App -->
+  <section id="app" class="app screen hidden">
+    <!-- mobile top bar -->
+    <header class="mobilebar">
+      <button id="menu-toggle" class="menu-toggle" aria-label="menu">☰</button>
+      <span class="brand">● Attendance</span>
+    </header>
+    <div id="nav-overlay" class="nav-overlay"></div>
+    <aside class="sidebar">
+      <div class="brand desk-brand">● Attendance</div>
+      <nav id="nav">
+        <a data-view="live" class="active">Live Floor</a>
+        <a data-view="today">Today</a>
+        <a data-view="employees">Employees</a>
+        <a data-view="enroll">Enroll</a>
+        <a data-view="review">Review</a>
+        <a data-view="devices">Devices</a>
+      </nav>
+      <button id="logout" class="btn ghost">Sign out</button>
+    </aside>
+
+    <main class="content">
+      <!-- LIVE -->
+      <div class="view" id="view-live">
+        <div class="row">
+          <div class="card metric">
+            <div class="metric-num" id="headcount">0</div>
+            <div class="metric-label">Currently in office</div>
+          </div>
+          <div class="card devices-mini" id="devices-mini"></div>
+        </div>
+        <div class="row grow">
+          <div class="card grow">
+            <h3>Present</h3>
+            <div class="grid" id="present-grid"></div>
+          </div>
+          <div class="card ticker-card">
+            <h3>Live feed</h3>
+            <div class="ticker" id="ticker"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TODAY -->
+      <div class="view hidden" id="view-today">
+        <h2>Today's attendance</h2>
+        <input id="today-search" class="search" placeholder="Filter by name / department…" />
+        <table class="tbl"><thead><tr>
+          <th>Employee</th><th>Department</th><th>Check-in</th><th>Check-out</th><th>Duration</th><th>Status</th>
+        </tr></thead><tbody id="today-body"></tbody></table>
+      </div>
+
+      <!-- EMPLOYEES -->
+      <div class="view hidden" id="view-employees">
+        <h2>Employees</h2>
+        <input id="emp-search" class="search" placeholder="Search…" />
+        <div class="grid wide" id="emp-grid"></div>
+      </div>
+
+      <!-- ENROLL -->
+      <div class="view hidden" id="view-enroll">
+        <h2>Enroll employee</h2>
+        <div class="row">
+          <div class="card">
+            <label>Employee code<input id="e-code" /></label>
+            <label>Full name<input id="e-name" /></label>
+            <label>Department<input id="e-dept" /></label>
+            <label>Position<input id="e-pos" /></label>
+            <div class="enroll-actions">
+              <button class="btn" id="e-shot">Capture from webcam</button>
+              <label class="btn ghost file">Upload photos<input id="e-file" type="file" accept="image/*" multiple hidden /></label>
+            </div>
+            <button class="btn" id="e-submit">Enroll</button>
+            <p id="e-msg" class="err"></p>
+          </div>
+          <div class="card">
+            <video id="e-video" autoplay playsinline muted class="enroll-video"></video>
+            <div class="thumbs" id="e-thumbs"></div>
+          </div>
+        </div>
+        <canvas id="e-canvas" class="hidden"></canvas>
+      </div>
+
+      <!-- REVIEW -->
+      <div class="view hidden" id="view-review">
+        <h2>Security review — rejected attempts</h2>
+        <div class="grid wide" id="review-grid"></div>
+      </div>
+
+      <!-- DEVICES -->
+      <div class="view hidden" id="view-devices">
+        <h2>Devices</h2>
+        <table class="tbl"><thead><tr>
+          <th>Device</th><th>Role</th><th>Label</th><th>Last seen</th><th></th>
+        </tr></thead><tbody id="devices-body"></tbody></table>
+      </div>
+    </main>
+  </section>
+
+  <script src="app.js?v=2"></script>
+</body>
+</html>
