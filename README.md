@@ -1,12 +1,37 @@
 # Office Face-Recognition Attendance System
 
-Two Android phones running as fixed kiosks — one at the entrance (**CHECK-IN**),
-one at the exit (**CHECK-OUT**) — capture faces, a backend verifies liveness and
-identity server-side, and a real-time dashboard shows who's in, who's out, when,
-and the current in-office headcount.
+[![CI](https://github.com/dostonsulaymon/office-face-attendance/actions/workflows/ci.yml/badge.svg)](https://github.com/dostonsulaymon/office-face-attendance/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
+[![Docker Compose](https://img.shields.io/badge/docker-compose-2496ED.svg)](https://docs.docker.com/compose/)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-> **Status:** under active construction, built in verifiable slices (see
-> [Build progress](#build-progress)). Not all services run yet.
+Two Android phones running as fixed kiosks — one at the entrance (**CHECK-IN**),
+one at the exit (**CHECK-OUT**) — capture faces, a backend verifies **liveness
+and identity server-side**, and a real-time dashboard shows who's in, who's out,
+when, and the current in-office headcount.
+
+> Face images and embeddings are sensitive biometric data. Read
+> [SECURITY.md](./SECURITY.md) before deploying.
+
+## Features
+
+- 📷 **Kiosk PWA** — front-camera capture, auto-capture, offline queue, no app store.
+- 🛡️ **Server-side anti-spoofing** — liveness runs on the backend; a client can
+  never fake "I'm live" (Silent-Face-Anti-Spoofing).
+- 🧠 **Face recognition** via CompreFace, with a configurable confidence threshold.
+- 🕒 **Attendance sessions** — check-in/out matching, cooldown, anomaly handling.
+- 📊 **Real-time dashboard** — live headcount, event feed, enrollment, review queue.
+- 🔐 **Auth** — JWT for admins, rotatable per-device API keys for kiosks.
+- 🐳 **One `docker compose up`** brings the whole stack online.
+
+## Contributing
+
+Contributions are welcome! See **[CONTRIBUTING.md](./CONTRIBUTING.md)** to get
+started, the **[Code of Conduct](./CODE_OF_CONDUCT.md)**, and
+**[good first issues](../../issues)**. Changes are tracked in
+[CHANGELOG.md](./CHANGELOG.md).
 
 ## Architecture
 
@@ -80,7 +105,8 @@ scripts/     Helper scripts (recognize.sh, e2e_backend.sh, device-keys.txt)
 ## Quick start
 
 ```bash
-cp .env.example .env      # set JWT_SECRET, admin creds, COMPREFACE_RECOGNITION_API_KEY
+cp .env.example .env                        # set JWT_SECRET, admin creds, COMPREFACE_RECOGNITION_API_KEY
+cp compreface/.env.example compreface/.env  # CompreFace stack config (defaults ok for local)
 
 # 1. CompreFace stack (heavy: multi-GB images, several GB RAM)
 cd compreface && docker compose up -d && cd ..

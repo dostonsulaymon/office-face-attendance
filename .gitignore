@@ -1,8 +1,7 @@
-# Env / secrets
+# Env / secrets (only *.env.example templates are committed)
 .env
 *.env.local
 !.env.example
-!compreface/.env
 
 # Python
 __pycache__/
